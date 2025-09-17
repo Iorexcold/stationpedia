@@ -1,0 +1,31 @@
+datasource db {
+  provider = "postgresql" // or "sqlite" if using file DB
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Item {
+  id         String     @id @default(cuid())
+  name       String
+  slug       String     @unique
+  createdAt  DateTime   @default(now())
+  categories Category[] @relation("ItemCategories")
+  images     Image[]
+}
+
+model Category {
+  id    String @id @default(cuid())
+  name  String
+  slug  String @unique
+  items Item[] @relation("ItemCategories")
+}
+
+model Image {
+  id    String @id @default(cuid())
+  url   String
+  item  Item   @relation(fields: [itemId], references: [id])
+  itemId String
+}
